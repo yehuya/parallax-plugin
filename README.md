@@ -1,16 +1,16 @@
 # parallax plugin (JS)
 ## background
-Parallax for element background
+Parallax for background
 
 <code>
   $('#elem').parallax().background(distance, transition);
 </code>
 
 ## box
-Parallax for element movmente 
+Element movment
 
 <code>
-  $('#elem').parallax().background(distance, transition);
+  $('#elem').parallax().box(distance, transition);
 </code>
 
 ### @param
