@@ -57,7 +57,7 @@
 
     /**
     * background parallax
-    * @param Number (movemant distance)
+    * @param Number (movement distance)
     * @param Number (speed - transition)
     */
     parallax.prototype.background = function(distance ,speed){
@@ -67,11 +67,31 @@
             this.transition(speed, 'background-position');
         }
 
-        // elem.style.cssText += "background-size:" + (100 + distance) + "%;";
-
         var move = function(x, y){
             elem.style.backgroundPositionX = -x/distance + 'px';
             elem.style.backgroundPositionY = -y/distance + 'px';
+        }
+
+        this.mouse(function(x, y){
+            move(x, y);
+        });
+    }
+
+    /**
+     * element parallax
+     * @param Number (movement distance)
+     * @param Number (speed - transition)
+     */
+    parallax.prototype.box = function(distance, speed){
+        var elem = this.element;
+
+        if(speed){
+            this.transition(speed, 'margin');
+        }
+
+        var move = function(x, y){
+            elem.style.marginTop = -y/distance + 'px';
+            elem.style.marginLeft = -x/distance + 'px';
         }
 
         this.mouse(function(x, y){
