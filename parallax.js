@@ -1,6 +1,6 @@
 /**
  * Parallax plugin 
- * Author: yehuda yadid
+ * Author: yehuya
  */
 
 (function(){
