@@ -1,10 +1,18 @@
 # parallax plugin (JS)
-<code>
-  var parallax = $('#elem').parallax();
-</code>
+## background
+Parallax for element background
 
 <code>
-  parallax.background(20);
+  $('#elem').parallax().background(distance, transition);
 </code>
 
-Set number as parameter (0-50)
+## box
+Parallax for element movmente 
+
+<code>
+  $('#elem').parallax().background(distance, transition);
+</code>
+
+### @param
+* @distance = Number (0-50) 
+* @transition = Number (0-99999999) time for transition css - (OPTIONAL)
