@@ -68,8 +68,7 @@
         }
 
         var move = function(x, y){
-            elem.style.backgroundPositionX = -x/distance + 'px';
-            elem.style.backgroundPositionY = -y/distance + 'px';
+            elem.style.backgroundPosition = (-x/distance) + 'px ' + (-y/distance) + 'px';
         }
 
         this.mouse(function(x, y){
