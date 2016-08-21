@@ -24,14 +24,16 @@
     * main function
     * @param Object (dom element)
     */
-    function parallax(element){
+    function parallax(element, options){
         this.element = element;
+        this.parallaxMobile = false; // parallax mobile is false
 
         return this;
     }
 
     /**
     * mouse movemant
+    * @param FN (callback)
     * @return fn callback (with page X/Y)
     */
     parallax.prototype.mouse = function(callback){
@@ -43,6 +45,28 @@
     }
 
     /**
+     * mobile device motion events
+     * @param FN (callback)
+     * @return callback (with device x/y/z)
+     */
+    parallax.prototype.motion = function(callback){
+        // if devicemotion event exists
+        if(window.DeviceOrientationEvent){
+            var devicemotion = function(e){
+                var z = e.alpha;
+                var y = Math.round(e.beta);
+                var x = Math.round(e.gamma);
+                
+                if(x != null || y != null){
+                    callback(x,y,z);
+                }
+            }
+
+            window.addEventListener('deviceorientation', devicemotion);
+        }
+    }
+
+    /**
      * parallax transition
      * @param Number (ms)
      * @param String (css property (background / opacity etc..))
@@ -51,8 +75,8 @@
         var elem = this.element;
         var number = parseInt(number);
 
-        var t = param + " " + number + "ms linear";
-        elem.style.cssText += "transition:" + t + ';webkit-transition:' + t + ';';
+        var t = param + " " + number + "ms ease-out";
+        elem.style.cssText += "transition:" + t + ';webkit-transition:' + t + ';-webkit-transform: translateZ(0);transform: translateZ(0);';
     }
 
     /**
@@ -74,6 +98,12 @@
         this.mouse(function(x, y){
             move(x, y);
         });
+
+        if(this.parallaxMobile){
+            this.motion(function(x,y,z){
+                move(x * distance * 2, y * distance * 2);
+            });
+        }
     }
 
     /**
@@ -96,6 +126,19 @@
         this.mouse(function(x, y){
             move(x, y);
         });
+
+         if(this.parallaxMobile){
+            this.motion(function(x,y,z){
+                move(x * distance, y * distance);
+            });
+        }
+
+    }
+
+    parallax.prototype.mobile = function(distance, speed){
+        this.parallaxMobile = true;
+
+        return this;
     }
 
 })();
