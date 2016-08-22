@@ -6,28 +6,48 @@
 (function(){
 
     /**
-    * add parallax plugin to Object.prototype of the window
+    * add parallax plugin to Element.prototype of the window
     */
-    Object.prototype.parallax = function(){
+    Element.prototype.parallax = function(option){
         var elem = this;
-        
-        // if JQUERY selector
-        if(this.selector){
-            elem = document.querySelector(this.selector);
-        }
 
-        var newParallax = new parallax(elem);
+        var newParallax = new parallax(elem, option);
         return newParallax;
+    }
+
+    /**
+     * jquery support
+     * !!!support only the first element in one call so pleas use only ID!!!
+     */
+    if(typeof jQuery !== undefined){
+        jQuery.fn.parallax = function(option){
+            var elem = this;
+            
+            var newParallax = new parallax(elem[0], option);
+            return newParallax;
+        }
     }
 
     /**
     * main function
     * @param Object (dom element)
     */
-    function parallax(element, options){
+    function parallax(element, option){
         this.element = element;
-        this.parallaxMobile = false; // parallax mobile is false
 
+        // default options
+        var options = {
+            distance: 20,
+            transition: null,
+            orientation: true,
+            orientationStyle: {
+                transition: 100,
+                distance: 10
+            }
+        }
+
+        this.options = extendOptions(options, option);
+        this.move();
         return this;
     }
 
@@ -50,6 +70,8 @@
      * @return callback (with device x/y/z)
      */
     parallax.prototype.motion = function(callback){
+        var self = this;
+
         // if devicemotion event exists
         if(window.DeviceOrientationEvent){
             var devicemotion = function(e){
@@ -58,6 +80,7 @@
                 var x = Math.round(e.gamma);
                 
                 if(x != null || y != null){
+                    self.transition();
                     callback(x,y,z);
                 }
             }
@@ -68,77 +91,70 @@
 
     /**
      * parallax transition
-     * @param Number (ms)
-     * @param String (css property (background / opacity etc..))
+     * @param Boolean (orientationStyle - transition)
      */
-    parallax.prototype.transition = function(number, param){
+    parallax.prototype.transition = function(orientation){
         var elem = this.element;
-        var number = parseInt(number);
+        var regular = parseInt(this.options.transition);
+        var orien = parseInt(this.options.orientationStyle.transition) || regular;
 
-        var t = param + " " + number + "ms ease-out";
-        elem.style.cssText += "transition:" + t + ';webkit-transition:' + t + ';-webkit-transform: translateZ(0);transform: translateZ(0);';
+        var t = false;
+
+        if(orientation && orien){
+            t = "transform " + orien + "ms ease-out";
+        }else if(regular){
+            t = "transform " + regular + "ms ease-out";
+        }
+
+        if(t){
+            elem.style.cssText += "transition:" + t + ';webkit-transition:' + t + ';';
+        }
     }
 
     /**
-    * background parallax
-    * @param Number (movement distance)
-    * @param Number (speed - transition)
+    * the movement of the parallax
     */
-    parallax.prototype.background = function(distance ,speed){
+    parallax.prototype.move = function(){
+        var self = this;
         var elem = this.element;
+        var distance = this.options.distance;
+        var distanceOri = this.options.orientationStyle.distance || distance;
 
-        if(speed){
-            this.transition(speed, 'background-position');
+        var moveDistance = function(x, y){
+            var x = (-x/distance) + 'px';
+            var y = (-y/distance) + 'px';
+            elem.style.cssText += "transform: translate3d(" + x + ", " + y + ", 0px); transform-style: preserve-3d; backface-visibility: hidden;";
         }
 
-        var move = function(x, y){
-            elem.style.backgroundPosition = (-x/distance) + 'px ' + (-y/distance) + 'px';
-        }
-
+        // mouse 
         this.mouse(function(x, y){
-            move(x, y);
+            self.transition(false);
+            moveDistance(x, y);
         });
 
-        if(this.parallaxMobile){
+        // device orientation
+        if(this.options.orientation){
             this.motion(function(x,y,z){
-                move(x * distance * 2, y * distance * 2);
+                self.transition(true);
+                moveDistance(x * distanceOri * 2, y * distanceOri * 2);
             });
         }
     }
 
     /**
-     * element parallax
-     * @param Number (movement distance)
-     * @param Number (speed - transition)
+     * combine two objects
+     * @param Object (def - the default object)
+     * @param Object (set - the new object)
+     * @return Object (def)
      */
-    parallax.prototype.box = function(distance, speed){
-        var elem = this.element;
-
-        if(speed){
-            this.transition(speed, 'margin');
+    var extendOptions = function(def, set){
+        for(var s in set){
+            if(def.hasOwnProperty(s)){
+                def[s] = set[s];
+            }
         }
 
-        var move = function(x, y){
-            elem.style.marginTop = -y/distance + 'px';
-            elem.style.marginLeft = -x/distance + 'px';
-        }
-
-        this.mouse(function(x, y){
-            move(x, y);
-        });
-
-         if(this.parallaxMobile){
-            this.motion(function(x,y,z){
-                move(x * distance, y * distance);
-            });
-        }
-
-    }
-
-    parallax.prototype.mobile = function(distance, speed){
-        this.parallaxMobile = true;
-
-        return this;
+        return def;
     }
 
 })();
