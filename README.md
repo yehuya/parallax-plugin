@@ -1,31 +1,17 @@
-# parallax plugin (JS)
-## background
-Parallax for background
+# Parallax plugin (JS)
+Element movment by mouse or device orientation
 
-<code>
-  $('#elem').parallax().background(distance, transition);
-</code>
-
-## box
-Element movment
-
-<code>
-  $('#elem').parallax().box(distance, transition);
-</code>
-
-## mobile 
-Device orientation
-
-<code>
-  $('#elem').parallax().mobile().background(distance, transition);
-</code>
-
-<code>
-  $('#elem').parallax().mobile().box(distance, transition);
-</code>
-
-Mobile parallax @transition param is adviced!
-
-### @param
-* @distance = Number (0-50) 
-* @transition = Number (0-99999999) - ms for transition css - (OPTIONAL)
+## Init
+### jQuery 
+```javascript
+$('<ONLY-ID-OF-ONE-ELEMENT>').parallax({
+  distance: <INTEGER>, // for the movment distance
+  transition: <INTEGER>, // ms for transition css for the movement
+  orientation: <BOLLEAN>, // default is true - for device orientation support and movement
+  orientationStyle { // only for device orientation
+    transition: <INTEGER>, 
+    distance: <INTEGER>
+  }
+});
+```
+@orientationStyle.transition param is adviced! (default = 100)
