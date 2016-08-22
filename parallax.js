@@ -9,10 +9,7 @@
     * add parallax plugin to Element.prototype of the window
     */
     Element.prototype.parallax = function(option){
-        var elem = this;
-
-        var newParallax = new parallax(elem, option);
-        return newParallax;
+        return new parallax(this, option);
     }
 
     /**
@@ -21,10 +18,7 @@
      */
     if(typeof jQuery !== undefined){
         jQuery.fn.parallax = function(option){
-            var elem = this;
-            
-            var newParallax = new parallax(elem[0], option);
-            return newParallax;
+            return new parallax(this[0], option);
         }
     }
 
